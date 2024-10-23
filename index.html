@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+</head>
+
+<body>
+    <form class="booking-form" id="donationForm">
+        <div class="row">
+            <div class="col-lg-12 d-flex flex-column">
+                <select name="type" class="app-select form-control" required>
+                    <option data-display="Project you want to donate">Project you want to donate</option>
+                    <option value="1">Donate type 1</option>
+                    <option value="2">Donate type 2</option>
+                    <option value="3">Donate type 3</option>
+                </select>
+            </div>
+            <div class="col-lg-6 d-flex flex-column">
+                <input name="fname" placeholder="Enter your name" class="form-control mt-20" required type="text">
+            </div>
+            <div class="col-lg-6 d-flex flex-column">
+                <input name="email" placeholder="Enter email address" class="form-control mt-20" required type="email">
+            </div>
+            <div class="col-lg-12 d-flex flex-column">
+                <input name="amount" placeholder="Donation amount (USD)" class="form-control mt-20" required
+                    type="text">
+                <textarea class="form-control mt-20" name="message" placeholder="Message" required></textarea>
+            </div>
+            <div class="col-lg-12 d-flex justify-content-end send-btn">
+                <button type="submit" class="submit-btn primary-btn mt-20 text-uppercase" id="submitBtn">donate<span
+                        class="lnr lnr-arrow-right"></span></button>
+            </div>
+            <div class="alert-msg"></div>
+        </div>
+    </form>
+
+    <script>
+        document.getElementById('donationForm').addEventListener('submit', async (event) => {
+            alert('submitted');
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const data = {
+                type: formData.get('type'),
+                fname: formData.get('fname'),
+                email: formData.get('email'),
+                amount: formData.get('amount'),
+                message: formData.get('message'),
+            };
+
+            try {
+                console.log(data);
+                const response = await fetch('/checkout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                const result = await response.json();
+                if (result.url) {
+                    // Redirect to Stripe Checkout session
+                    window.location.href = result.url;
+                } else {
+                    // Handle any errors
+                    console.error('Error:', result);
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+            }
+        });
+    </script>
+</body>
+
+</html>
